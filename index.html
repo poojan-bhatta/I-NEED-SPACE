@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Untitled NASA Game</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Special+Elite&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="stage">
+  <!-- TITLE -->
+  <div id="s-title" class="scr on">
+    <div class="card" id="title">
+      <div class="kick">Mission log · 2026</div>
+      <h1 class="bebas" style="font-size:118px;margin:14px 0">Untitled<br>NASA game</h1>
+      <p style="font-size:22px;line-height:1.4">A story told in the quiet after the silence. Listen closely.</p>
+      <div style="margin-top:36px">
+        <button class="btn" id="go">Connect to Houston</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPENING (canvas scenes + captions) -->
+  <div id="s-open" class="scr"><canvas id="oc" width="1280" height="720"></canvas></div>
+
+  <!-- SPACE (exploration) -->
+  <div id="dlg"><div id="dn"></div><div id="dt"></div></div>
+  <div id="ch"></div>
+  <button class="btn alt" id="vbtn" style="position:absolute;right:18px;top:18px;z-index:70;font-size:18px;padding:6px 14px;margin:0">Voice: on</button>
+  <div id="fade"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

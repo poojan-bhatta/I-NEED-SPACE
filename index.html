@@ -5,20 +5,43 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Untitled NASA Game</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Special+Elite&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fredoka:wght@500;600;700&family=Special+Elite&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div id="stage">
+  <template id="space-art-template">
+    <div class="space-art" aria-hidden="true">
+      <div class="starfield"></div>
+      <div class="nebula"></div>
+      <div class="saturn"><span></span></div>
+      <div class="blue-planet"></div>
+      <div class="shooting-star"></div>
+      <div class="moon-ground"></div>
+      <svg class="space-astronaut" viewBox="0 0 220 290" aria-hidden="true">
+        <ellipse cx="112" cy="276" rx="76" ry="12" fill="#080d2c" opacity=".6"/>
+        <path d="M145 174h42q13 0 13 14v68q0 12-13 12h-42z" fill="#e9eaff" stroke="#262052" stroke-width="8"/>
+        <path d="M157 191h26v34h-26z" fill="#32bce9" stroke="#262052" stroke-width="6"/>
+        <path d="M95 185q-31 13-38 47l-15 33q-5 12 7 17 10 4 17-8l24-27 35 5 13 35q5 14 18 9 10-4 5-18l-14-55q-6-28-32-37z" fill="#fff3df" stroke="#262052" stroke-width="9" stroke-linejoin="round"/>
+        <path d="M83 214q-20 1-28 25l-16 29q-6 10-17 5-10-5-4-17l19-43q13-25 43-25" fill="#fff7e9" stroke="#262052" stroke-width="8" stroke-linejoin="round"/>
+        <path d="M99 181q8-30 7-44h39q-2 28 11 47l-11 38q-21 17-50 0z" fill="#fff3df" stroke="#262052" stroke-width="9" stroke-linejoin="round"/>
+        <circle cx="119" cy="99" r="52" fill="#fff6e8" stroke="#262052" stroke-width="9"/>
+        <ellipse cx="112" cy="101" rx="34" ry="40" fill="#181849" stroke="#8877ed" stroke-width="6"/>
+        <path d="M91 80q8-14 19-16" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+        <path d="M87 116q12 18 31 18" fill="none" stroke="#6ad9f6" stroke-width="4" opacity=".8"/>
+        <path d="M158 191v34" stroke="#fff" stroke-width="4" opacity=".75"/>
+      </svg>
+    </div>
+    <div class="space-frame" aria-hidden="true"></div>
+  </template>
+
   <!-- TITLE -->
-  <div id="s-title" class="scr on">
-    <div class="card" id="title">
-      <div class="kick">Mission log · 2026</div>
-      <h1 class="bebas" style="font-size:118px;margin:14px 0">Untitled<br>NASA game</h1>
-      <p style="font-size:22px;line-height:1.4">A story told in the quiet after the silence. Listen closely.</p>
-      <div style="margin-top:36px">
-        <button class="btn" id="go">Connect to Houston</button>
-      </div>
+  <div id="s-title" class="scr on launch-screen">
+    <div class="launch-copy" id="title">
+      <div class="launch-kicker">A signal beyond the silence</div>
+      <h1 class="launch-title">I need<br><span>space</span></h1>
+      <p>A story told in the quiet after the silence. Listen closely.</p>
+      <button class="launch-btn" id="go">Play <span aria-hidden="true">→</span></button>
     </div>
   </div>
 
@@ -28,7 +51,11 @@
   <!-- SPACE (exploration) -->
   <div id="dlg"><div id="dn"></div><div id="dt"></div></div>
   <div id="ch"></div>
-  <button class="btn alt" id="vbtn" style="position:absolute;right:18px;top:18px;z-index:70;font-size:18px;padding:6px 14px;margin:0">Voice: on</button>
+  <label class="autoplay-control" for="autoplay">
+    <input id="autoplay" type="checkbox">
+    <span class="autoplay-track" aria-hidden="true"><span></span></span>
+    <span>Autoplay</span>
+  </label>
   <div id="fade"></div>
 </div>
 

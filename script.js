@@ -3,6 +3,8 @@ const W=1280,H=720;
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
+$('#s-title').prepend($('#space-art-template').content.cloneNode(true));
+
 /* ---------- scaling ---------- */
 function fit(){const s=Math.min(innerWidth/W,innerHeight/H);$('#stage').style.transform='translate(-50%,-50%) scale('+s+')'}
 addEventListener('resize',fit);fit();
@@ -19,15 +21,16 @@ addEventListener('keyup',e=>{K[e.code]=false});
 addEventListener('pointerup',()=>{M.down=false});
 
 /* ---------- dialogue ---------- */
-let adv=null,skipT=null;
-function advance(){if(skipT){skipT();return}if(adv)adv()}
+let adv=null,skipT=null,autoPlay=false,autoTimer=null,autoDelay=0;
+function scheduleAutoAdvance(){
+  clearTimeout(autoTimer);autoTimer=null;
+  if(autoPlay&&adv)autoTimer=setTimeout(()=>{autoTimer=null;if(autoPlay&&adv)advance()},autoDelay)
+}
+function advance(){clearTimeout(autoTimer);autoTimer=null;if(skipT){skipT();return}if(adv)adv()}
+$('#autoplay').addEventListener('change',e=>{autoPlay=e.target.checked;scheduleAutoAdvance()});
 $('#dlg').addEventListener('click',advance);
-let voiceOn=true;
-function pickVoice(){const v=('speechSynthesis' in window)?speechSynthesis.getVoices():[];return v.find(x=>/^en/i.test(x.lang)&&/male|david|daniel|alex|uk english male/i.test(x.name))||v.find(x=>/^en/i.test(x.lang))||null}
-function speak(who,text){if(!voiceOn||!('speechSynthesis' in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.voice=pickVoice();u.rate=.92;u.pitch=who==='CONTROL'?1.1:.85;u.volume=1;speechSynthesis.speak(u)}
-$('#vbtn').addEventListener('click',e=>{e.stopPropagation();voiceOn=!voiceOn;e.target.textContent='Voice: '+(voiceOn?'on':'off');if(!voiceOn&&'speechSynthesis' in window)speechSynthesis.cancel()});
-function say(who,text){speak(who,text);return new Promise(res=>{$('#dlg').classList.add('on');$('#dn').textContent=who||'';const t=$('#dt');t.textContent='';let i=0,iv=null;
-  const fin=()=>{clearInterval(iv);skipT=null;t.textContent=text;adv=()=>{adv=null;res()}};
+function say(who,text){return new Promise(res=>{$('#dlg').classList.add('on');$('#dn').textContent=who||'';const t=$('#dt');t.textContent='';let i=0,iv=null;
+  const fin=()=>{clearInterval(iv);skipT=null;t.textContent=text;autoDelay=Math.max(2200,Math.min(9000,text.length*52+1200));adv=()=>{adv=null;res()};scheduleAutoAdvance()};
   skipT=fin;iv=setInterval(()=>{i++;t.textContent=text.slice(0,i);if(i>=text.length)fin()},22)})}
 function choose(opts){return new Promise(res=>{const box=$('#ch');box.innerHTML='';box.style.display='flex';
   opts.forEach(o=>{const b=document.createElement('button');b.className='btn alt';b.textContent=o.t;b.onclick=e=>{e.stopPropagation();box.style.display='none';box.innerHTML='';res(o.id)};box.appendChild(b)})})}
@@ -140,8 +143,12 @@ async function shot(fn,lines,hold){$('#fade').style.opacity=1;await sleep(800);s
 
 /* ---------- opening story ---------- */
 async function opening(){
-  $('#s-title').classList.remove('on');$('#s-open').classList.add('on');
-  await shot(scEarth,[
+  const title=$('#s-title'),open=$('#s-open');
+  $('#go').disabled=true;setOscene(scEarth);open.classList.add('on');open.style.opacity='0';
+  title.style.transition='opacity 1.6s ease';open.style.transition='opacity 1.6s ease';
+  requestAnimationFrame(()=>{title.style.opacity='0';open.style.opacity='1'});
+  await sleep(1600);title.classList.remove('on');title.style.opacity='';title.style.transition='';open.style.opacity='';open.style.transition='';
+  await shotDissolve(scEarth,[
     ['NARRATOR','Once, people looked up at the sky every night. Children waved at the satellites crossing overhead.'],
     ['NARRATOR','Then they decided there was nothing left out there to find. The stations were closed one by one, and the telescopes were switched off.']
   ],800);
@@ -180,8 +187,16 @@ async function opening(){
 
 /* ---------- begin ---------- */
 function beginButton(){return new Promise(res=>{
-  const k=document.createElement('div');k.id='beginkick';k.textContent='The mission starts now';
-  const b=document.createElement('button');b.id='beginbtn';b.textContent='Begin';
-  b.onclick=()=>{b.style.pointerEvents='none';k.remove();b.remove();res()};
-  const st=document.getElementById('s-open');st.appendChild(k);st.appendChild(b)})}
+  $('#dlg').classList.remove('on');
+  const screen=document.createElement('div');screen.id='begin-screen';screen.className='launch-screen';
+  screen.appendChild($('#space-art-template').content.cloneNode(true));
+  const copy=document.createElement('div');copy.className='launch-copy begin-copy';
+  const kick=document.createElement('div');kick.className='launch-kicker';kick.textContent='Chapter 1 · The Moon';
+  const title=document.createElement('h1');title.className='launch-title';title.append('The moon',document.createElement('br'),'is waiting');
+  const intro=document.createElement('p');intro.textContent='Your mission starts now. The signal is waiting.';
+  const button=document.createElement('button');button.id='beginbtn';button.className='launch-btn';button.append('Begin');
+  const arrow=document.createElement('span');arrow.setAttribute('aria-hidden','true');arrow.textContent='→';button.appendChild(arrow);
+  button.onclick=()=>{screen.remove();res()};
+  copy.append(kick,title,intro,button);screen.appendChild(copy);
+  document.getElementById('s-open').appendChild(screen)})}
 $('#go').addEventListener('click',()=>{opening()});
